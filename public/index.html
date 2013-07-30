@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>dcmr</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Bootstrap -->
+        <link href="vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <style>
+            body {
+                padding-top: 50px;
+            }
+            #url, #next {
+                display: none;
+            }
+            #sessid {
+                display: block;
+            }
+            #data {
+                border: 1px solid #ccc;
+                width: 100%;
+                padding: 20px;
+            }
+            #data hr {
+                border-top: 1px solid #ccc;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <a class="navbar-brand" href="#">dcmr</a>
+            </div>
+        </div>
+
+        <div class="container">
+            <h1>Hello there.</h1>
+
+            <p id="url">Point your push monitor at:
+                <code id="sessid">WAIT</code>
+            </p>
+
+            <p id="next">Wait for data to come in!</p>
+            <pre id="data"></pre>
+        </div>
+        <a href="https://github.com/mikewadsten/dcmr">
+            <img style="position: absolute; top: 0; right: 0; border: 0; z-index: 2000;"
+            src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"
+            alt="Fork me on GitHub">
+        </a>
+        <script src="vendor/jquery/jquery.min.js"></script>
+        <script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="vendor/socket.io-client/dist/socket.io.js"></script>
+        <script>
+        $("#url").hide();
+        $("#next").hide();
+        $("#data").hide();
+        var socket = window.socket = io.connect();
+        socket.on('data', function (data) {
+            console.log("New data: ", data);
+            console.log(socket.socket, socket.socket.sessionid);
+            $("#sessid").text(window.location.href + "push/" + socket.socket.sessionid);
+            $("#url").delay(1000).show('slow', function () {
+                $("#next").delay(1000).show('slow');
+            });
+            $("#data").show().html(function(_, contents) {
+                var json = JSON.stringify(data, null, 4);
+                if (!contents.length) {
+                    return json;
+                }
+                return json + "<hr>" + contents;
+            });
+        });
+        socket.emit('blah', {});
+        </script>
+    </body>
+</html>

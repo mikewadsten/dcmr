@@ -1,0 +1,9 @@
+{
+  "name": "dcmr",
+  "version": "0.0.0",
+  "dependencies": {
+    "socket.io-client": "~0.9.16",
+    "bootstrap": "~3.0.0-rc1",
+    "angular": "~1.0.7"
+  }
+}
