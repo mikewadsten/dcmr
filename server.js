@@ -14,8 +14,12 @@ io.on('connection', function (socket) {
         delete sockets[k];
     }
     sockets[socket.id] = socket;
-    socket.emit('data', {"Notice": "New Socket.IO connection. ID = " + socket.id});
+    socket.emit('data', {
+		"Notice": "New Socket.IO connection.",
+		"ID": socket.id
+	});
 });
+
 io.on('blah', function (data) {
     console.log("Got blah: " + data);
 })
