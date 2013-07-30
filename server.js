@@ -26,21 +26,15 @@ app.configure(function () {
     app.use(express.bodyParser());
 });
 
-app.get('/push/:id/:val', function (req, res) {
-    var params = req.params;
-    console.log("GET to /push/" + params.id);
-    res.send("OK... " + params.val);
-    if (sockets[params.id]) {
-        sockets[params.id].emit('data', {val: params.val});
-    }
-});
 app.put('/push/:id', function (req, res) {
     console.log("PUT to /push/" + req.params.id);
     var id = req.params.id;
     if (sockets[id]) {
         sockets[id].emit('data', req.body);
+        res.send("OK");
+    } else {
+        res.status(404).send("Session ID not found");
     }
-    res.send("OK");
 });
 
 var port = process.env.PORT || 3000;
