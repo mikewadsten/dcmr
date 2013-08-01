@@ -5,6 +5,9 @@ var express = require('express'),
     io = require('socket.io').listen(server);
 
 var sockets = {};
+var time = function () {
+    return new Date().getTime();
+};
 
 io.on('connection', function (socket) {
     console.log("We have a connection! Socket ID: " + socket.id);
@@ -15,9 +18,10 @@ io.on('connection', function (socket) {
     }
     sockets[socket.id] = socket;
     socket.emit('data', {
-		"Notice": "New Socket.IO connection.",
-		"ID": socket.id
-	});
+        notice: "New Socket.IO connection.",
+        session_id: socket.id,
+        time: time()
+    });
 });
 
 io.on('blah', function (data) {

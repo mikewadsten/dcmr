@@ -19,6 +19,7 @@
                 border: 1px solid #ccc;
                 width: 100%;
                 padding: 20px;
+                margin-top: 30px;
             }
             #data hr {
                 border-top: 1px solid #ccc;
@@ -34,13 +35,15 @@
         </div>
 
         <div class="container">
-            <h1>Hello there.</h1>
+            <h1>Say hello to <abbr title="Device Cloud monitor receiver">dcmr</abbr></h1>
+            <hr>
 
-            <p id="url">Point your push monitor at:
+            <p id="url">
+                Point your push monitor at:
                 <code id="sessid">WAIT</code>
+                and wait for data to come in!
             </p>
 
-            <p id="next">Wait for data to come in!</p>
             <pre id="data"></pre>
         </div>
         <a href="https://github.com/mikewadsten/dcmr">
@@ -56,15 +59,19 @@
         $("#next").hide();
         $("#data").hide();
         var socket = window.socket = io.connect();
+        socket.on('connect', function () {
+            console.log("Connected.");
+            $("#sessid").text(window.location.href + "push/" + socket.socket.sessionid);
+            $("#url").show('slow');
+        });
         socket.on('data', function (data) {
             console.log("New data: ", data);
-            console.log(socket.socket, socket.socket.sessionid);
-            $("#sessid").text(window.location.href + "push/" + socket.socket.sessionid);
-            $("#url").delay(1000).show('slow', function () {
-                $("#next").delay(1000).show('slow');
-            });
-            $("#data").show().html(function(_, contents) {
+            $("#data").show('slow').html(function(_, contents) {
                 var json = JSON.stringify(data, null, 4);
+                if ("notice" in data && "session_id" in data && "time" in data) {
+                    // This message signifies a successful connection.
+                    json = '<span class="text-success">' + json + '</span>';
+                }
                 if (!contents.length) {
                     return json;
                 }
